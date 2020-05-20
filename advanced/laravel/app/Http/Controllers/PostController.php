@@ -66,23 +66,23 @@ class PostController extends BaseController
         try {
             $params = $request->all();
             if (empty($params)) {
-                $key = $this->cacheService->getKey('posts_data');
-                if (empty($key)) {
+                $keyData = $this->cacheService->getKey('posts_data');
+                if (empty($keyData)) {
                     $users = $this->postRepository->all();
                     $this->cacheService->setKey('posts_data', $users);
-                    $key = $this->cacheService->getKey('posts_data');
+                    $keyData = $this->cacheService->getKey('posts_data');
                 }
-                return response()->json($key,200);
+                return response()->json(['data' => $keyData],200);
             } else {
-                $key = $this->cacheService->getKey('posts_data_'.md5(implode("_",$params)));
-                if (empty($key)) {
+                $keyData = $this->cacheService->getKey('posts_data_'.md5(implode("_",$params)));
+                if (empty($keyData)) {
                     $users = $this->postRepository->all();
                     $this->cacheService->setKey('posts_data_'.md5(implode("_",$params)), $users);
-                    $key = $this->cacheService->getKey('posts_data_'.md5(implode("_",$params)));
+                    $keyData = $this->cacheService->getKey('posts_data_'.md5(implode("_",$params)));
                 }
                 $filter = new Search();
-                $response = $filter->search($params, $key);
-                return response()->json($response,200);
+                $response = $filter->search($params, $keyData);
+                return response()->json(['data' => $response],200);
             }
         } catch(\Exception $e) {
             throw new ApiException($e->getMessage(), $e->getCode(), $e);
@@ -98,14 +98,14 @@ class PostController extends BaseController
      */
     public function getCommentByPostId(Request $request, int $postId) {
         try {
-            $key = $this->cacheService->getKey('user_comments_'.$postId);
-            if (empty($key)) {
+            $keyData = $this->cacheService->getKey('user_comments_'.$postId);
+            if (empty($keyData)) {
                 $response = $this->commentRepository->getCommentByPostId($postId);
                 $this->cacheService->setKey('user_comments_'.$postId, $response);
-                $key = $this->cacheService->getKey('user_comments_'.$postId);
-                return response()->json($key,200);
+                $keyData = $this->cacheService->getKey('user_comments_'.$postId);
+                return response()->json($keyData,200);
             }
-            return response()->json($key,200);
+            return response()->json($keyData,200);
         } catch(\Exception $e) {
             throw new ApiException($e->getMessage(), $e->getCode(), $e);
         }

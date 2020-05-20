@@ -13,17 +13,17 @@ interface CacheInterface
 {
     /**
      * @param string $key
-     * @return array
+     * @return array|null
      */
     public function getKey(string $key): ?array;
     
     /**
      * @param string $key
      * @param $array
-     * @param int $time
-     * @return array
+     * @param int $minutes
+     * @return bool
      */
-    public function setKey(string $key, $array, int $time): bool;
+    public function setKey(string $key, $array, int $minutes): bool;
     
     /**
      * @param string $key
