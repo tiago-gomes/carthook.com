@@ -22,6 +22,10 @@ GET users By Id
 ```
 http://127.0.0.1:888/api/user/1
 ```
+GET user Posts by Id
+```
+http://127.0.0.1:888/api/user/1/post
+```
 GET Posts
 ```
 http://127.0.0.1:888/api/post
