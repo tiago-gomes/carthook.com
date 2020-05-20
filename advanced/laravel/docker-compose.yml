@@ -1,0 +1,63 @@
+web:
+  hostname: nginx
+  domainname: carthook.com
+  env_file:
+    - .env
+  build: ./docker/web
+  container_name: "cartHook_web"
+  ports:
+    - "888:80"
+  volumes:
+    - ./:/code
+    - ./docker/web/api.conf:/etc/nginx/conf.d/api.conf
+    - ./docker/log/nginx:/var/log/nginx
+  restart: always
+  links:
+    - app
+    - redis
+    - db
+app:
+  env_file:
+    - .env
+  links:
+  - db
+  build: ./docker/app
+  container_name: "cartHook_app"
+  environment:
+    PHP_IDE_CONFIG: "serverName=API Server"
+  volumes:
+    - ./:/code
+  ports:
+    - "1337:1337"
+  restart: always
+composer:
+  build: ./docker/composer
+  container_name: "cartHook_composer"
+  volumes_from:
+  - app
+redis:
+  hostname: redis
+  container_name: "cartHook_redis"
+  image: redis
+  ports:
+  - "6379:6379"
+  volumes:
+  - ./docker/redis:/redis/data
+  restart: always
+db:
+  hostname: mysql
+  domainname: api.test
+  image: mysql:5.7
+  container_name: "cartHook_mysql"
+  command: "--innodb_use_native_aio=0 --wait_timeout=28800"
+  environment:
+  - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  - MYSQL_DATABASE=${DB_DATABASE}
+  - MYSQL_USER=${DB_USERNAME}
+  - MYSQL_PASSWORD=${DB_PASSWORD}
+  volumes:
+  - ./docker/data:/var/lib/mysql
+  - ./:/code
+  restart: always
+  ports:
+  - "3306:3306"
